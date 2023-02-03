@@ -6,7 +6,17 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Document</title>
 	<style>
-
+/* DOM-manipulation er at tilføje eller fjerne noget HTML til HTMLen, der ikke var der i forvejen. */
+/* Kontrollere HTML og CSS vha Javascript. */
+/* Hvilke ting er kritiske for at få siden til at se sådan ud så hurtigt som muligt?*/
+/* Layout, farver */
+/* fonts er ikke vigtige hvis vi har en computer font, for så vil man ikke se skiftet. */
+/* Render blocking external resource: Når browseren downloader link: style.css inden at den kan fortsætte med HTML documentet. */
+/* Ved at lægge de kritiske css ind i style-taget, så minimere vi render blockingen. */
+/* Forskel på root: og html{} - begge er alt */
+/* var(--pølsehorn) -- betyder det er custom property */
+/* Deferred loading - udsat læsning */
+/* I teorien kunne man bare ligge link-tagget for style.css nede i bunden */
 		/* ------------------------SOME-Style------------------------- */
 		[class^="icon-"]:before, [class*=" icon-"]:before {
     font-family: "some";
@@ -187,8 +197,9 @@ main {
 }
 
 	</style>
-	<link rel="preload" href="./css/style.css" onload="this.onload=null;this.rel='stylesheet'">
-	<noscript><link rel="stylesheet" href="css/style.css"></noscript>
+	<!-- <link rel="preload" href="./css/style.css" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="css/style.css"></noscript> -->
+	<!-- dette er en løsning, nede i bunden er en anden løsning -->
 <!-- What this means: link rel="preload" as="style" requests the stylesheet asynchronously.  -->
 <!-- The onload attribute in the link allows the css to be processed when it finishes loading. -->
 <!-- "nulling" the onload handler once it is used helps some browsers avoid re-calling the handler upon switching the rel attribute -->
@@ -279,5 +290,26 @@ main {
 			</ul>
 		</section>
 	</footer>
+	<!-- Fordi det handler om render-blocking ressources så skal vi skrive vores Javascript i HTML-documentet, da alle eksterne dokumenter kan være potentielt render-blocking -->
+	<script>
+		//deklarere vores funktiojn
+		function cssLoader(src){//src et parameter som vi definere senere når vi har funktionen
+			const stylesheet = document.createElement('link')//gemmer et html element i konstanten stylesheet
+			stylesheet.href = src
+			stylesheet.rel = "stylesheet"
+			//appende stylesheet til vores head-tag
+			document.getElementsByTagName("head")[0].appendChild(stylesheet) //da der står getElements er det en notelist vi får fat i derfor skal der stå [0] bagefter fordi en notelist opføre sig som en array
+
+		}
+
+		//nu skal functionen kaldes
+		document.addEventListener("DOMContentLoaded", function(){
+			cssLoader("/css/style.css")
+		})
+
+		// /-absolut sti for den kan kun ligge der, henviser til root
+		// ./-relativsti betyder at vi er i den mappe som filen ligger i
+
+	</script>
 </body>
 </html>
